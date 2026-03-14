@@ -63,8 +63,8 @@ background:#0d7cc9;
 Fireflies detected: {{count}}
 </div>
 
-<video controls>
-<source src="/processed/{{video}}" type="video/mp4">
+<video controls width="600">
+    <source src="{{ url_for('processed_video', filename=video) }}" type="video/mp4">
 </video>
 
 <br><br>
