@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.hero{
+max-width:560px;
+margin:auto;
+background:white;
+padding:55px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Title */
+
+.hero h1{
+font-size:36px;
+color:#0077cc;
+margin-bottom:25px;
+font-weight:600;
+}
+
+/* Labels */
+
+.hero label{
+font-size:18px;
+color:#333;
+font-weight:500;
+}
+
+/* Inputs */
+
+input{
+width:100%;
+padding:14px;
+border:1px solid #dcdcdc;
+border-radius:8px;
+margin-top:6px;
+margin-bottom:18px;
+font-size:16px;
+background:#fafafa;
+color:#333;
+}
+
+input:focus{
+outline:none;
+border-color:#1fa3ff;
+box-shadow:0 0 0 2px rgba(31,163,255,0.2);
+}
+
+/* Button */
+
+.btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+font-size:18px;
+cursor:pointer;
+background:#0077cc;
+color:white;
+transition:0.25s;
+font-weight:500;
+}
+
+.btn:hover{
+background:#005fa3;
+transform:translateY(-2px);
+}
+
+/* login link */
+
+.login-link{
+margin-top:18px;
+display:block;
+color:#555;
+font-size:16px;
+}
+
+.login-link a{
+color:#0077cc;
+text-decoration:none;
+font-weight:500;
+}
+
+.login-link a:hover{
+text-decoration:underline;
+}
+
+/* error */
+
+.error{
+background:#ff4d4d;
+color:white;
+padding:12px;
+border-radius:8px;
+margin-bottom:20px;
+font-size:15px;
+}
+
+/* password strength */
+
+.strength{
+font-size:15px;
+margin-bottom:15px;
+color:#555;
+}
+
+.strength span{
+font-weight:bold;
+}
+
+/* email validation */
+
+.email-error{
+color:#ff4d4d;
+font-size:14px;
+margin-bottom:15px;
+display:none;
+}
+
+/* password eye */
+
+.password-box{
+position:relative;
+}
+
+.toggle{
+position:absolute;
+right:12px;
+top:14px;
+cursor:pointer;
+font-size:16px;
+color:#888;
+}
+
+.toggle:hover{
+color:#0077cc;
+}
+
+.hero{
+transition:0.25s;
+}
+
+.hero:hover{
+transform:translateY(-4px);
+}
+
+</style>
+
+<div class="hero">
+
+<h1>Sign Up</h1>
+
+{% if error %}
+<div class="error">
+{{error}}
+</div>
+{% endif %}
+
+<form method="POST">
+
+<label>Username</label>
+<input type="text" name="username" required>
+
+<label>Password</label>
+
+<div class="password-box">
+<input id="password" type="password" name="password" required>
+<span class="toggle" onclick="togglePassword()">👁</span>
+</div>
+
+<div class="strength">
+Password strength: <span id="strengthText">Weak</span>
+</div>
+
+<label>Full Name</label>
+<input type="text" name="fullname" required>
+
+<label>Email</label>
+<input id="email" type="email" name="email" required>
+
+<div id="emailError" class="email-error">
+Invalid email format
+</div>
+
+<button class="btn" type="submit">Create Account</button>
+
+</form>
+
+<div class="login-link">
+Already have an account? <a href="/login">Login</a>
+</div>
+
+</div>
+
+<script>
+
+/* show / hide password */
+
+function togglePassword(){
+let pass = document.getElementById("password")
+
+if(pass.type === "password"){
+pass.type = "text"
+}else{
+pass.type = "password"
+}
+}
+
+/* password strength */
+
+const password = document.getElementById("password")
+const strengthText = document.getElementById("strengthText")
+
+password.addEventListener("input", function(){
+
+let value = password.value
+let strength = "Weak"
+
+if(value.length >= 8){
+strength = "Medium"
+}
+
+if(value.length >= 12){
+strength = "Strong"
+}
+
+strengthText.innerText = strength
+
+})
+
+/* realtime email validation */
+
+const email = document.getElementById("email")
+const emailError = document.getElementById("emailError")
+
+email.addEventListener("input", function(){
+
+let pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/
+
+if(email.value.match(pattern)){
+emailError.style.display = "none"
+}else{
+emailError.style.display = "block"
+}
+
+})
+
+</script>
+
+{% endblock %}

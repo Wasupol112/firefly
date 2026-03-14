@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+
+/* container */
+
+.map-container{
+max-width:1100px;
+margin:auto;
+background:white;
+padding:35px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* title */
+
+.page-title{
+text-align:center;
+color:#0077cc;
+font-size:34px;
+margin-bottom:25px;
+font-weight:600;
+}
+
+/* map */
+
+#map{
+height:55vh;
+min-height:320px;
+border-radius:16px;
+}
+
+/* chart */
+
+#fireflyChartBox{
+margin-top:30px;
+background:#f7f9fb;
+padding:20px;
+border-radius:16px;
+border:1px solid #e5e5e5;
+height:320px;
+}
+
+#fireflyChartBox h3{
+color:#0077cc;
+margin-bottom:10px;
+}
+
+/* popup */
+
+.leaflet-popup-content{
+font-size:16px;
+line-height:1.7;
+color:#333;
+
+width:220px;        /* ความกว้างคงที่ */
+max-width:220px;
+
+word-break:break-word;
+white-space:normal;
+}
+
+.leaflet-popup-content-wrapper{
+padding:12px;
+border-radius:12px;
+}
+@media (max-width:768px){
+
+.leaflet-popup-content{
+width:240px;
+max-width:240px;
+font-size:17px;
+line-height:1.8;
+}
+
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width:768px){
+
+.map-container{
+padding:20px;
+}
+
+.page-title{
+font-size:26px;
+}
+
+#map{
+height:45vh;
+}
+
+#fireflyChartBox{
+height:280px;
+padding:15px;
+}
+
+.leaflet-popup-content{
+font-size:17px;
+max-width:260px;
+}
+
+}
+
+</style>
+
+<div class="map-container">
+
+<h1 class="page-title">แผนที่การกระจายตัวของหิ่งห้อยในบางกระเจ้า</h1>
+
+<div id="map"></div>
+
+<div id="fireflyChartBox">
+<h3>จำนวนหิ่งห้อยโดยประมาณ</h3>
+<canvas id="fireflyChart"></canvas>
+</div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+/* create map */
+
+var map = L.map('map',{
+zoomControl:false
+}).setView([13.669,100.576],13);
+
+/* map layer */
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+attribution:'© OpenStreetMap'
+}).addTo(map);
+
+/* marker icon */
+
+function coloredMarker(color){
+
+return new L.Icon({
+iconUrl:"https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-"+color+".png",
+shadowUrl:"https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+iconSize:[25,41],
+iconAnchor:[12,41],
+popupAnchor:[1,-34],
+shadowSize:[41,41]
+});
+
+}
+
+/* location data */
+
+var locations=[
+
+{
+name:"คลองลัดบางยอ",
+lat:13.6680509,
+lng:100.5585331,
+density:"สูงมาก",
+color:"green",
+area:"ตำบลบางกระสอบ",
+info:"พื้นที่อนุรักษ์ต้นลำพู ชุมชนเรียกว่า หมู่บ้านหิ่งห้อย"
+},
+
+{
+name:"โครงการลำพูบางกระสอบ",
+lat:13.6655839,
+lng:100.5658753,
+density:"สูงมาก",
+color:"green",
+area:"ตำบลบางกระสอบ",
+info:"ป่าลำพูริมแม่น้ำเจ้าพระยา พบหิ่งห้อยจำนวนมาก"
+},
+
+{
+name:"สวนศรีนครเขื่อนขันธ์",
+lat:13.6973370,
+lng:100.5657175,
+density:"สูง",
+color:"yellow",
+area:"ตำบลบางกระเจ้า",
+info:"พื้นที่ระบบนิเวศน้ำกร่อย มีต้นลำพูจำนวนมาก"
+},
+
+{
+name:"ทางจักรยานบางน้ำผึ้ง",
+lat:13.6779142,
+lng:100.5811187,
+density:"ปานกลาง",
+color:"orange",
+area:"ตำบลบางกระเจ้า",
+info:"ป่าชุมชน พบหิ่งห้อยกระจาย"
+},
+
+{
+name:"ตลาดน้ำบางน้ำผึ้ง",
+lat:13.6799300,
+lng:100.5740558,
+density:"ปานกลาง",
+color:"orange",
+area:"ตำบลบางน้ำผึ้ง",
+info:"พื้นที่สวน มีความชื้นสูงเหมาะกับหิ่งห้อย"
+},
+
+{
+name:"ชุมชนทรงคนอง",
+lat:13.7036562,
+lng:100.5765107,
+density:"ต่ำ",
+color:"red",
+area:"ตำบลทรงคนอง",
+info:"พื้นที่ชุมชน พบหิ่งห้อยประปราย"
+}
+
+];
+
+/* create markers */
+
+locations.forEach(function(place){
+
+var marker=L.marker(
+[place.lat,place.lng],
+{icon: coloredMarker(place.color)}
+).addTo(map);
+
+marker.bindPopup(
+"<b>"+place.name+"</b><br>"+
+"พื้นที่: "+place.area+"<br>"+
+"ความหนาแน่น: "+place.density+"<br><br>"+
+place.info,
+{
+maxWidth:240,
+minWidth:220
+}
+);
+
+});
+
+/* chart */
+
+var ctx=document.getElementById("fireflyChart");
+
+new Chart(ctx,{
+
+type:"line",
+
+data:{
+labels:["คลองลัดบางยอ","ลำพูบางกระสอบ","สวนศรีนครฯ","บางน้ำผึ้ง","ตลาดน้ำ","ทรงคนอง"],
+
+datasets:[{
+label:"จำนวนหิ่งห้อยโดยประมาณ",
+data:[20000,15000,10000,6000,3000,1000],
+borderColor:"#0077cc",
+backgroundColor:"rgba(0,119,204,0.2)",
+tension:0.4,
+fill:true
+}]
+},
+
+options:{
+
+responsive:true,
+maintainAspectRatio:false,
+
+plugins:{
+legend:{
+labels:{
+color:"#333",
+font:{size:16}
+}
+}
+},
+
+scales:{
+x:{
+ticks:{
+color:"#333",
+font:{size:14}
+},
+grid:{color:"#e5e5e5"}
+},
+y:{
+ticks:{
+color:"#333",
+font:{size:14}
+},
+grid:{color:"#e5e5e5"}
+}
+}
+
+}
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.hero{
+max-width:760px;
+margin:auto;
+background:white;
+padding:60px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+transition:0.25s;
+}
+
+.hero:hover{
+transform:translateY(-4px);
+}
+
+/* title */
+
+.hero h1{
+font-size:36px;
+color:#0077cc;
+margin-bottom:10px;
+font-weight:600;
+}
+
+/* subtitle */
+
+.hero p{
+font-size:18px;
+color:#555;
+margin-bottom:35px;
+}
+
+/* button */
+
+.btn{
+padding:14px 30px;
+border:none;
+border-radius:10px;
+font-size:18px;
+cursor:pointer;
+background:#0077cc;
+color:white;
+transition:0.25s;
+margin-top:10px;
+}
+
+.btn:hover{
+background:#005fa3;
+transform:translateY(-2px);
+}
+
+/* file input */
+
+.file-input{
+margin:25px 0;
+}
+
+.file-input input{
+font-size:16px;
+}
+
+/* dropdown */
+
+.select-input{
+margin:25px 0;
+text-align:left;
+}
+
+.select-input label{
+display:block;
+color:#333;
+margin-bottom:8px;
+font-size:16px;
+font-weight:500;
+}
+
+.select-input select{
+width:100%;
+padding:14px;
+border-radius:8px;
+border:1px solid #ddd;
+background:#fafafa;
+color:#333;
+font-size:16px;
+cursor:pointer;
+transition:0.25s;
+}
+
+.select-input select:focus{
+outline:none;
+border-color:#1fa3ff;
+box-shadow:0 0 0 2px rgba(31,163,255,0.2);
+}
+
+/* toast */
+
+.toast{
+position:fixed;
+bottom:25px;
+right:25px;
+background:#ff4d4d;
+color:white;
+padding:14px 22px;
+border-radius:10px;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+opacity:0;
+transform:translateY(20px);
+transition:0.3s;
+font-size:16px;
+}
+
+.toast.show{
+opacity:1;
+transform:translateY(0);
+}
+
+/* upload guide */
+
+.upload-guide{
+margin-top:35px;
+background:#f7f9fb;
+padding:25px;
+border-radius:14px;
+text-align:left;
+border:1px solid #e3e8ef;
+}
+
+.upload-guide h3{
+color:#0077cc;
+margin-bottom:12px;
+}
+
+.upload-guide h4{
+color:#0077cc;
+margin-top:18px;
+margin-bottom:8px;
+}
+
+.upload-guide ul{
+margin-left:22px;
+color:#444;
+font-size:15px;
+line-height:1.7;
+}
+
+/* upload area */
+
+.upload-area{
+border:2px dashed #0077cc;
+border-radius:14px;
+padding:50px;
+text-align:center;
+cursor:pointer;
+background:#f8fbff;
+transition:0.25s;
+}
+
+.upload-area:hover{
+background:#eef6ff;
+}
+
+.upload-area.dragover{
+border-color:#1fa3ff;
+background:#e6f2ff;
+}
+
+/* icon */
+
+.upload-icon{
+font-size:40px;
+margin-bottom:10px;
+}
+
+/* text */
+
+.upload-text{
+font-size:18px;
+color:#333;
+margin-bottom:5px;
+}
+
+.upload-sub{
+font-size:15px;
+color:#777;
+}
+
+/* filename */
+
+.file-name{
+margin-top:15px;
+font-size:16px;
+color:#0077cc;
+}
+</style>
+
+<div class="hero">
+
+    <h1>Upload Firefly Video</h1>
+
+    <p>
+        Upload your night video for automatic firefly detection
+    </p>
+
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+
+        <div class="upload-area" id="uploadArea">
+
+            <div class="upload-icon">📹</div>
+
+            <p class="upload-text">
+                Drag & drop your video here
+            </p>
+
+            <p class="upload-sub">
+                or click to select file
+            </p>
+
+    <input id="videoInput" type="file" name="video" accept="video/*" hidden>
+
+</div>
+
+<div id="fileName" class="file-name"></div>
+
+        <div class="select-input">
+            <label for="model_type">Select Video Mode (เลือกรูปแบบการถ่ายวิดีโอ):</label>
+            <select name="model_type" id="model_type" required>
+                <option value="still">Still Camera (ตั้งกล้องนิ่ง)</option>
+                <option value="pan">Panning Camera (กล้องเคลื่อนที่/แพน)</option>
+            </select>
+        </div>
+
+        <button class="btn" type="submit">Upload Video</button>
+
+    </form>
+
+<div class="upload-guide">
+
+<h3>Recommended Recording Conditions</h3>
+
+<ul>
+
+<li>
+<b>Static recording (ถ่ายอยูกับที่)</b> – เหมาะกับวิดิโอที่ไม่มีการเคลื่อนที่ของกล้อง
+</li>
+
+<li>
+<b>Horizontal movement recording (ถ่ายแบบเคลื่อนที่ในแนวระนาบ)</b> – เหมาะสำหรับวิดิโอที่มีการเคลื่อนกล้องไปในแนวระนาบอย่างช้า ๆ และสม่ำเสมอ
+
+</ul>
+
+<h4>Limitations</h4>
+
+<ul>
+
+<li>รองรับเฉพาะการเคลื่อนที่ ในทิศทางเดียวเท่านั้น</li>
+
+<li>ควรเคลื่อนที่ อย่างช้า ๆ และต่อเนื่อง</li>
+
+<li>ไม่รองรับการเคลื่อนที่เร็ว การสั่น หรือการเปลี่ยนทิศทางหลายครั้ง</li>
+
+<li>ไม่รองรับการเคลื่อนที่ขึ้น-ลง หรือการหมุนกล้อง</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div id="toast" class="toast">
+    Please select a video file
+</div>
+
+<script>
+
+const uploadArea = document.getElementById("uploadArea")
+const input = document.getElementById("videoInput")
+const fileName = document.getElementById("fileName")
+
+/* click upload */
+
+uploadArea.addEventListener("click", () => {
+    input.click()
+})
+
+/* show filename */
+
+input.addEventListener("change", () => {
+
+    if(input.files.length){
+        fileName.textContent = "Selected file: " + input.files[0].name
+    }
+
+})
+
+/* drag events */
+
+uploadArea.addEventListener("dragover", (e)=>{
+    e.preventDefault()
+    uploadArea.classList.add("dragover")
+})
+
+uploadArea.addEventListener("dragleave", ()=>{
+    uploadArea.classList.remove("dragover")
+})
+
+uploadArea.addEventListener("drop", (e)=>{
+
+    e.preventDefault()
+    uploadArea.classList.remove("dragover")
+
+    input.files = e.dataTransfer.files
+
+    if(input.files.length){
+        fileName.textContent = "Selected file: " + input.files[0].name
+    }
+
+})
+
+/* form validation */
+
+const form = document.getElementById("uploadForm")
+const toast = document.getElementById("toast")
+
+form.addEventListener("submit", function(e){
+
+    if(!input.files.length){
+        e.preventDefault()
+
+        toast.classList.add("show")
+
+        setTimeout(()=>{
+            toast.classList.remove("show")
+        },3000)
+
+    }
+
+})
+
+</script>
+
+{% endblock %}

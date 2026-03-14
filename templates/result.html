@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Detection Result</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0b1d2a;
+color:white;
+text-align:center;
+margin-top:50px;
+}
+
+.container{
+background:#132f44;
+padding:40px;
+border-radius:10px;
+width:600px;
+margin:auto;
+}
+
+video{
+width:100%;
+border-radius:10px;
+margin-top:20px;
+}
+
+.count{
+font-size:30px;
+margin-top:20px;
+color:#1fa3ff;
+}
+
+button{
+padding:10px 20px;
+margin:5px;
+border:none;
+border-radius:5px;
+background:#1fa3ff;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0d7cc9;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Firefly Detection Result</h2>
+
+<div class="count">
+Fireflies detected: {{count}}
+</div>
+
+<video controls>
+<source src="/processed/{{video}}" type="video/mp4">
+</video>
+
+<br><br>
+
+<a href="/upload">
+<button>Upload Another Video</button>
+</a>
+
+<br><br>
+
+<a href="/dashboard">
+<button>Back to Home</button>
+</a>
+
+</div>
+
+</body>
+</html>
