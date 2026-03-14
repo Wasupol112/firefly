@@ -135,9 +135,17 @@ def upload():
             # --- เลือกใช้ Model ตามที่ผู้ใช้เลือก ---
             if model_type == "pan":
                 firefly_count, output_path = count_fireflies_pan(input_path)
+
             else:
-                firefly_count = count_fireflies_still(input_path)
-                output_path = input_path
+                result = count_fireflies_still(input_path)
+
+                # ถ้า model return tuple ให้เอาเฉพาะค่าตัวแรก
+                if isinstance(result, tuple):
+                    firefly_count = result[0]
+                    output_path = result[1]
+                else:
+                    firefly_count = result
+                    output_path = input_path
 
             filename = os.path.basename(output_path)
 
