@@ -142,8 +142,8 @@ def upload():
             # เราจึงส่งแค่ชื่อไฟล์วิดีโอต้นฉบับกลับไปแสดงผลชั่วคราวก่อน
             return render_template(
                 "result.html",
-                video=output_path,
-                count=firefly_count,
+                video=filename,
+                count=firefly_count
                 model_used=model_type
             )
         else:
