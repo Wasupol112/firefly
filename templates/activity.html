@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.hero{
+max-width:760px;
+margin:auto;
+background:white;
+padding:70px;
+border-radius:22px;
+box-shadow:0 12px 32px rgba(0,0,0,0.08);
+text-align:center;
+transition:0.25s;
+}
+
+.hero:hover{
+transform:translateY(-4px);
+}
+
+/* title */
+
+.hero h1{
+font-size:52px;
+color:#0077cc;
+margin-bottom:25px;
+letter-spacing:4px;
+font-weight:700;
+}
+
+/* text */
+
+.hero p{
+font-size:20px;
+color:#555;
+margin-bottom:10px;
+}
+
+/* button */
+
+.home-btn{
+margin-top:35px;
+display:inline-block;
+padding:14px 28px;
+background:#0077cc;
+color:white;
+border:none;
+border-radius:10px;
+font-size:18px;
+text-decoration:none;
+cursor:pointer;
+transition:0.25s;
+}
+
+.home-btn:hover{
+background:#005fa3;
+transform:translateY(-2px);
+}
+
+</style>
+
+<div class="hero">
+
+<h1>COMING SOON</h1>
+
+<p>ส่วนของกิจกรรมกำลังอยู่ระหว่างการพัฒนา</p>
+<p>โปรดติดตามเร็ว ๆ นี้</p>
+
+
+</div>
+
+{% endblock %}
