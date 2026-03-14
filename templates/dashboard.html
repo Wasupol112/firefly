@@ -53,13 +53,61 @@ font-size:18px;
 color:#555;
 }
 
-/* feature cards */
+/* slider wrapper */
 
-.card-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:35px;
+.feature-slider-wrapper{
+position:relative;
 margin-bottom:70px;
+}
+
+/* slider */
+
+.feature-slider{
+display:flex;
+gap:35px;
+overflow-x:auto;
+scroll-behavior:smooth;
+padding:10px;
+}
+
+.feature-slider::-webkit-scrollbar{
+display:none;
+}
+
+/* card size */
+
+.feature-card{
+min-width:300px;
+flex:0 0 auto;
+}
+
+/* arrow buttons */
+
+.slider-btn{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+background:white;
+border:none;
+width:50px;
+height:50px;
+border-radius:50%;
+box-shadow:0 6px 16px rgba(0,0,0,0.2);
+font-size:26px;
+cursor:pointer;
+z-index:10;
+}
+
+.slider-btn.left{
+left:-10px;
+}
+
+.slider-btn.right{
+right:-10px;
+}
+
+.slider-btn:hover{
+transform:translateY(-50%) scale(1.1);
 }
 
 .feature-card{
@@ -155,9 +203,13 @@ opacity:0.8;
 <div class="dashboard-container">
 
 
-<!-- Feature cards -->
+<!-- Feature Slider -->
 
-<div class="card-grid">
+<div class="feature-slider-wrapper">
+
+<button class="slider-btn left" onclick="scrollCards(-1)">❮</button>
+
+<div class="feature-slider" id="featureSlider">
 
 <div class="feature-card" onclick="window.location='/learning'">
 <div class="feature-title">Learning</div>
@@ -186,6 +238,10 @@ Discover the best season and time to see fireflies
 Upload your night video for firefly detection
 </div>
 </div>
+
+</div>
+
+<button class="slider-btn right" onclick="scrollCards(1)">❯</button>
 
 </div>
 
@@ -240,35 +296,19 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 var fireflyPoints = [
 
-/* High density (green areas) */
-
 [13.6680509,100.5585331,1.0],
 [13.6655839,100.5658753,1.0],
-
-/* Medium-high */
-
 [13.6973370,100.5657175,0.8],
-
-/* Medium */
-
 [13.6779142,100.5811187,0.6],
 [13.6799300,100.5740558,0.6],
-
-/* Low */
-
 [13.7036562,100.5765107,0.3]
 
 ];
 
-
-/* heatmap */
-
 var heat = L.heatLayer(fireflyPoints,{
-
 radius:45,
 blur:30,
 maxZoom:15,
-
 gradient:{
 0.2:"blue",
 0.4:"lime",
@@ -276,7 +316,6 @@ gradient:{
 0.8:"orange",
 1:"red"
 }
-
 }).addTo(map);
 
 
@@ -313,6 +352,60 @@ f.style.animationDuration=(6+Math.random()*6)+"s";
 document.body.appendChild(f);
 
 }
+
+
+/* =========================
+   FEATURE SLIDER
+   ========================= */
+
+const slider = document.getElementById("featureSlider");
+const cards = slider.children;
+const cardWidth = 335;
+
+/* clone first and last for loop */
+
+const firstClone = cards[0].cloneNode(true);
+const lastClone = cards[cards.length-1].cloneNode(true);
+
+slider.appendChild(firstClone);
+slider.insertBefore(lastClone, cards[0]);
+
+/* start position */
+
+slider.scrollLeft = cardWidth;
+
+
+/* arrow scroll */
+
+function scrollCards(direction){
+
+slider.scrollBy({
+left: direction * cardWidth,
+behavior:"smooth"
+});
+
+}
+
+
+/* infinite loop logic */
+
+slider.addEventListener("scroll", ()=>{
+
+const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+/* loop left */
+
+if(slider.scrollLeft <= 5){
+slider.scrollLeft = maxScroll - cardWidth - 5;
+}
+
+/* loop right */
+
+if(slider.scrollLeft >= maxScroll - 5){
+slider.scrollLeft = cardWidth + 5;
+}
+
+});
 
 </script>
 
