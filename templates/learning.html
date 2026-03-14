@@ -67,6 +67,7 @@ gap:25px;
 overflow-x:auto;
 scroll-behavior:smooth;
 padding:10px;
+scroll-snap-type:x mandatory;
 }
 
 .video-slider::-webkit-scrollbar{
@@ -75,6 +76,7 @@ display:none;
 
 .video-card{
 flex:0 0 420px;
+scroll-snap-align:start;
 }
 
 .video-card img{
@@ -116,12 +118,12 @@ right:-10px;
 
 .flashcards{
 margin-top:30px;
-max-width:700px;
+max-width:900px;
 margin-left:auto;
 margin-right:auto;
 
 display:grid;
-grid-template-columns:repeat(2,1fr);
+grid-template-columns:repeat(3,1fr);
 gap:25px;
 }
 
@@ -153,7 +155,7 @@ justify-content:center;
 text-align:center;
 padding:25px;
 border-radius:14px;
-font-size:20px;
+font-size:16px;
 line-height:1.7;
 backface-visibility:hidden;
 }
@@ -245,10 +247,28 @@ font-size:16px;
 padding:20px;
 }
 
+/* reference */
+
+.reference ul{
+padding-left:20px;
+}
+
+.reference li{
+margin-bottom:12px;
+}
+
+.reference a{
+color:#1a5edb;
+text-decoration:none;
+}
+
+.reference a:hover{
+text-decoration:underline;
+}
+
 }
 
 </style>
-
 
 <div class="learning-container">
 
@@ -375,30 +395,160 @@ A chemical reaction producing light in living organisms.
 </div>
 </div>
 
+<div class="flashcard" onclick="flipCard(this)">
+<div class="card-inner">
+<div class="card-front">What are the physical characteristics of fireflies?</div>
+<div class="card-back">
+Fireflies have soft bodies, wings, and light-producing organs on their abdomen.
+</div>
+</div>
 </div>
 
+<div class="flashcard" onclick="flipCard(this)">
+<div class="card-inner">
+<div class="card-front">How does firefly bioluminescence work?</div>
+<div class="card-back">
+Light is produced by a chemical reaction involving luciferin, oxygen, and the enzyme luciferase.
+</div>
+</div>
 </div>
 
+<div class="flashcard" onclick="flipCard(this)">
+<div class="card-inner">
+<div class="card-front">What is the life cycle of a firefly?</div>
+<div class="card-back">
+Egg → Larva → Pupa → Adult. Most of their life is spent in the larval stage.
+</div>
+</div>
 </div>
 
+<div class="flashcard" onclick="flipCard(this)">
+<div class="card-inner">
+<div class="card-front">Where do fireflies live?</div>
+<div class="card-back">
+They are commonly found in wetlands, forests, and near rivers or mangroves.
+</div>
+</div>
+</div>
+
+<div class="flashcard" onclick="flipCard(this)">
+<div class="card-inner">
+<div class="card-front">What environments do fireflies prefer?</div>
+<div class="card-back">
+They prefer humid environments with dense vegetation and minimal artificial light.
+</div>
+</div>
+</div>
+
+<div class="flashcard" onclick="flipCard(this)">
+<div class="card-inner">
+<div class="card-front">Where are fireflies distributed globally?</div>
+<div class="card-back">
+Fireflies are found in many regions including Asia, the Americas, and parts of Europe.
+</div>
+</div>
+</div>
+
+<div class="flashcard" onclick="flipCard(this)">
+<div class="card-inner">
+<div class="card-front">What do fireflies symbolize in culture?</div>
+<div class="card-back">
+They often symbolize hope, beauty, and fleeting moments in nature.
+</div>
+</div>
+</div>
+
+</div> 
+</div>
+
+
+<!-- reference -->
+
+<div class="section-card reference">
+
+<h2>แหล่งอ้างอิง</h2>
+
+<ul>
+
+<li>
+<a href="https://www.bangkokbiznews.com/environment/1185454" target="_blank">
+Bangkokbiznews (2024) – หิ่งห้อยใกล้สูญพันธุ์
+</a>
+</li>
+
+<li>
+<a href="https://www.bangchak.co.th/storage/document/biodiversity/2025/biodiversity-management-2025.pdf" target="_blank">
+Bangchak Corporation – รายงานความหลากหลายทางชีวภาพ
+</a>
+</li>
+
+<li>
+<a href="https://researchcafe.tsri.or.th/firefly/" target="_blank">
+Research Cafe – งานวิจัยเกี่ยวกับหิ่งห้อย
+</a>
+</li>
+
+<li>
+<a href="https://en.wikipedia.org/wiki/Bang_Kachao" target="_blank">
+Wikipedia – Bang Kachao
+</a>
+</li>
+
+</ul>
+
+</div>
 
 <script>
+const slider = document.getElementById("videoSlider");
+const cards = slider.children;
+
+const cardWidth = cards[0].offsetWidth + 25;
+
+/* clone first & last */
+
+const firstClone = cards[0].cloneNode(true);
+const lastClone = cards[cards.length - 1].cloneNode(true);
+
+slider.appendChild(firstClone);
+slider.insertBefore(lastClone, cards[0]);
+
+/* start position */
+
+slider.scrollLeft = cardWidth;
+
+
+/* arrow buttons */
 
 function scrollVideo(direction){
 
-const slider=document.getElementById("videoSlider");
-
 slider.scrollBy({
-left: slider.clientWidth * direction,
+left: direction * cardWidth,
 behavior:"smooth"
 });
 
 }
 
+
+/* infinite loop */
+
+slider.addEventListener("scroll",()=>{
+
+const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+if(slider.scrollLeft <= cardWidth){
+slider.scrollLeft = maxScroll - (cardWidth * 2);
+}
+
+if(slider.scrollLeft >= maxScroll - 5){
+slider.scrollLeft = cardWidth + 5;
+}
+
+});
+
+
 function flipCard(card){
 card.classList.toggle("flip");
 }
-
 </script>
 
 {% endblock %}
