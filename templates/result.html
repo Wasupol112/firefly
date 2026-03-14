@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
@@ -16,34 +17,27 @@ margin-top:60px;
 
 .container{
 background:white;
-padding:40px;
+padding:50px;
 border-radius:12px;
-width:650px;
+width:600px;
 margin:auto;
 box-shadow:0 6px 20px rgba(0,0,0,0.1);
 }
 
 h2{
-margin-bottom:10px;
+margin-bottom:15px;
 }
 
 .count{
-font-size:32px;
-margin-top:15px;
+font-size:40px;
+margin-top:20px;
 color:#2a7de1;
 font-weight:bold;
 }
 
-video{
-width:100%;
-border-radius:10px;
-margin-top:25px;
-box-shadow:0 4px 10px rgba(0,0,0,0.15);
-}
-
 button{
 padding:12px 24px;
-margin:8px;
+margin:10px;
 border:none;
 border-radius:6px;
 background:#2a7de1;
@@ -71,17 +65,13 @@ background:#1d5fb0;
 Fireflies detected: {{count}}
 </div>
 
-<video controls width="600">
-    <source src="{{ url_for('processed_video', filename=video) }}" type="video/mp4">
-</video>
-
 <br><br>
 
 <a href="/upload">
 <button>Upload Another Video</button>
 </a>
 
-<br><br>
+<br>
 
 <a href="/dashboard">
 <button>Back to Home</button>
