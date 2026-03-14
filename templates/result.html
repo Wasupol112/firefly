@@ -1,83 +1,112 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
-
-<head>
-<title>Detection Result</title>
+{% block content %}
 
 <style>
 
-body{
-font-family: Arial, sans-serif;
-background:#f5f7fb;
-color:#333;
-text-align:center;
-margin-top:60px;
+.result-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:70vh;
 }
 
-.container{
+.result-card{
 background:white;
-padding:50px;
-border-radius:12px;
-width:600px;
-margin:auto;
-box-shadow:0 6px 20px rgba(0,0,0,0.1);
+padding:60px 50px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+text-align:center;
+
+max-width:650px;
+width:100%;
 }
 
-h2{
-margin-bottom:15px;
+.result-title{
+font-size:26px;
+margin-bottom:25px;
 }
 
-.count{
-font-size:40px;
-margin-top:20px;
+.result-count{
+font-size:48px;
 color:#2a7de1;
-font-weight:bold;
+font-weight:600;
+margin-bottom:40px;
 }
 
-button{
-padding:12px 24px;
-margin:10px;
-border:none;
-border-radius:6px;
+.result-buttons{
+display:flex;
+flex-direction:column;
+gap:15px;
+align-items:center;
+}
+
+.result-btn{
+display:inline-block;
+padding:12px 28px;
+border-radius:8px;
 background:#2a7de1;
 color:white;
+text-decoration:none;
 font-size:16px;
-cursor:pointer;
 transition:0.2s;
 }
 
-button:hover{
+.result-btn:hover{
 background:#1d5fb0;
+}
+
+/* mobile */
+
+@media (max-width:600px){
+
+.result-card{
+padding:35px 25px;
+}
+
+.result-title{
+font-size:22px;
+}
+
+.result-count{
+font-size:34px;
+}
+
+.result-btn{
+width:100%;
+max-width:200px;
+}
+
 }
 
 </style>
 
-</head>
+<div class="result-wrapper">
 
-<body>
+<div class="result-card">
 
-<div class="container">
-
-<h2>Firefly Detection Result</h2>
-
-<div class="count">
-Fireflies detected: {{count}}
+<div class="result-title">
+Firefly Detection Result
 </div>
 
-<br><br>
+<div class="result-count">
+Fireflies detected: {{ count }}
+</div>
 
-<a href="/upload">
-<button>Upload Another Video</button>
+<div class="result-buttons">
+
+<a href="/upload" class="result-btn">
+Upload Another Video
 </a>
 
-<br>
-
-<a href="/dashboard">
-<button>Back to Home</button>
+<a href="/dashboard" class="result-btn">
+Back to Home
 </a>
 
 </div>
 
-</body>
-</html>
+</div>
+
+</div>
+
+{% endblock %}
