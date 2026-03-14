@@ -133,13 +133,22 @@ def upload():
             video.save(input_path)
             
             # --- เลือกใช้ Model ตามที่ผู้ใช้เลือก ---
+            # --- เลือกใช้ Model ตามที่ผู้ใช้เลือก ---
             if model_type == "pan":
-                firefly_count, output_path = count_fireflies_pan(input_path)
+
+                result = count_fireflies_pan(input_path)
+
+                if isinstance(result, tuple):
+                    firefly_count = result[0]
+                    output_path = result[1]
+                else:
+                    firefly_count = result
+                    output_path = input_path
 
             else:
+
                 result = count_fireflies_still(input_path)
 
-                # ถ้า model return tuple ให้เอาเฉพาะค่าตัวแรก
                 if isinstance(result, tuple):
                     firefly_count = result[0]
                     output_path = result[1]
