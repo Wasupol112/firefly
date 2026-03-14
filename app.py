@@ -5,6 +5,7 @@ from firefly_model import count_fireflies_still, count_fireflies_pan
 import sqlite3
 import os
 import re
+import shutil
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".",1)[1].lower() in ALLOWED_EXTENSIONS
@@ -135,10 +136,15 @@ def upload():
             if model_type == "pan":
                 firefly_count, output_path = count_fireflies_pan(input_path)
             else:
-                firefly_count, output_path = count_fireflies_still(input_path)
+                firefly_count = count_fireflies_still(input_path)
+                output_path = input_path
 
             filename = os.path.basename(output_path)
 
+            processed_path = os.path.join(app.config["PROCESSED_FOLDER"], filename)
+
+            shutil.copy(output_path, processed_path)
+
             return render_template(
                 "result.html",
                 video=filename,
@@ -146,17 +152,6 @@ def upload():
                 model_used=model_type
             )
 
-            # copy video ไป processed
-            import shutil
-            shutil.copy(input_path, output_path)
-            # หมายเหตุ: ตอนนี้โมเดลของคุณคืนค่ามาแค่ตัวเลข (ไม่ได้คืนค่า output_path)
-            # เราจึงส่งแค่ชื่อไฟล์วิดีโอต้นฉบับกลับไปแสดงผลชั่วคราวก่อน
-            return render_template(
-                "result.html",
-                video=filename,
-                count=firefly_count,
-                model_used=model_type
-            )
         else:
             return render_template("upload.html", error="Only video files allowed")
             
