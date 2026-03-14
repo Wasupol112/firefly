@@ -7,46 +7,54 @@
 <style>
 
 body{
-font-family:Arial;
-background:#0b1d2a;
-color:white;
+font-family: Arial, sans-serif;
+background:#f5f7fb;
+color:#333;
 text-align:center;
-margin-top:50px;
+margin-top:60px;
 }
 
 .container{
-background:#132f44;
+background:white;
 padding:40px;
-border-radius:10px;
-width:600px;
+border-radius:12px;
+width:650px;
 margin:auto;
+box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+
+h2{
+margin-bottom:10px;
+}
+
+.count{
+font-size:32px;
+margin-top:15px;
+color:#2a7de1;
+font-weight:bold;
 }
 
 video{
 width:100%;
 border-radius:10px;
-margin-top:20px;
-}
-
-.count{
-font-size:30px;
-margin-top:20px;
-color:#1fa3ff;
+margin-top:25px;
+box-shadow:0 4px 10px rgba(0,0,0,0.15);
 }
 
 button{
-padding:10px 20px;
-margin:5px;
+padding:12px 24px;
+margin:8px;
 border:none;
-border-radius:5px;
-background:#1fa3ff;
+border-radius:6px;
+background:#2a7de1;
 color:white;
 font-size:16px;
 cursor:pointer;
+transition:0.2s;
 }
 
 button:hover{
-background:#0d7cc9;
+background:#1d5fb0;
 }
 
 </style>
@@ -63,7 +71,7 @@ background:#0d7cc9;
 Fireflies detected: {{count}}
 </div>
 
-<video controls width="600">
+<video controls>
     <source src="{{ url_for('processed_video', filename=video) }}" type="video/mp4">
 </video>
 
