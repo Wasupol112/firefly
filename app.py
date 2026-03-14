@@ -136,14 +136,15 @@ def upload():
                 firefly_count, output_path = count_fireflies_pan(input_path)
             else:
                 firefly_count, output_path = count_fireflies_still(input_path)
-            
+
+            filename = os.path.basename(output_path)
             # หมายเหตุ: ตอนนี้โมเดลของคุณคืนค่ามาแค่ตัวเลข (ไม่ได้คืนค่า output_path)
             # เราจึงส่งแค่ชื่อไฟล์วิดีโอต้นฉบับกลับไปแสดงผลชั่วคราวก่อน
             return render_template(
                 "result.html",
-                video=output_path
+                video=output_path,
                 count=firefly_count,
-                model_used=model_type # ส่งไปบอกหน้า result ด้วยว่าใช้โหมดไหนเผื่ออยากแสดงผล
+                model_used=model_type
             )
         else:
             return render_template("upload.html", error="Only video files allowed")
