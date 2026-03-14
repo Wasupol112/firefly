@@ -143,7 +143,7 @@ def upload():
             return render_template(
                 "result.html",
                 video=filename,
-                count=firefly_count
+                count=firefly_count,
                 model_used=model_type
             )
         else:
