@@ -248,4 +248,4 @@ def count_fireflies_pan(video_path: str) -> int:
         prev_gray = curr_gray.copy()
 
     cap.release()
-    return firefly_id 
+    return firefly_id , output_path
