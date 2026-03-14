@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.home-container{
+max-width:1300px;
+margin:auto;
+padding:50px 30px;
+}
+
+/* grid card */
+
+.card-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:35px;
+margin-bottom:70px;
+}
+
+/* card */
+
+.feature-card{
+background:white;
+padding:45px 40px;
+border-radius:18px;
+min-height:160px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+transition:0.25s;
+display:flex;
+flex-direction:column;
+justify-content:center;
+cursor:pointer;
+}
+
+.feature-card:hover{
+transform:translateY(-6px);
+box-shadow:0 18px 40px rgba(0,0,0,0.12);
+}
+
+/* title */
+
+.feature-title{
+font-size:28px;
+font-weight:600;
+color:#0077cc;
+margin-bottom:12px;
+}
+
+/* text */
+
+.feature-text{
+font-size:18px;
+line-height:1.6;
+color:#444;
+}
+
+/* disabled upload */
+
+.feature-card.disabled{
+opacity:0.55;
+cursor:not-allowed;
+}
+
+.feature-card.disabled:hover{
+transform:none;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* mini map */
+
+.map-card{
+background:white;
+padding:35px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+text-align:center;
+}
+
+/* map */
+
+#miniMap{
+height:380px;
+border-radius:12px;
+margin-top:20px;
+}
+
+/* title */
+
+.map-card h2{
+color:#0077cc;
+font-size:28px;
+margin-bottom:10px;
+}
+
+/* text */
+
+.map-text{
+margin-top:12px;
+font-size:18px;
+color:#555;
+}
+
+</style>
+
+
+<div class="home-container">
+
+<!-- Feature cards -->
+
+<div class="card-grid">
+
+<div class="feature-card" onclick="window.location='/learning'">
+<div class="feature-title">Learning</div>
+<div class="feature-text">
+Learn about fireflies and their ecosystem
+</div>
+</div>
+
+
+<div class="feature-card" onclick="window.location='/map'">
+<div class="feature-title">Firefly Map</div>
+<div class="feature-text">
+Explore locations where fireflies can be found
+</div>
+</div>
+
+
+<div class="feature-card" onclick="window.location='/schedule'">
+<div class="feature-title">Schedule</div>
+<div class="feature-text">
+Discover the best season and time to see fireflies
+</div>
+</div>
+
+
+<div class="feature-card disabled" onclick="goLogin()">
+<div class="feature-title">Upload Video</div>
+<div class="feature-text">
+Login required to upload video
+</div>
+</div>
+
+</div>
+
+
+<!-- Mini Map -->
+
+<div class="map-card">
+
+<h2 style="color:#0077cc;">Firefly Map</h2>
+
+<div id="miniMap"></div>
+
+<div class="map-text">
+Click to explore firefly locations
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+function goLogin(){
+alert("Please login before uploading video");
+window.location="/login";
+}
+
+</script>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+var miniMap = L.map('miniMap',{
+zoomControl:false,
+attributionControl:false
+}).setView([13.669,100.576],13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+attribution:'© OpenStreetMap'
+}).addTo(miniMap);
+
+
+// จุดตัวอย่างหิ่งห้อย
+
+var fireflyPoints = [
+[13.6680,100.5585],
+[13.6655,100.5658],
+[13.6973,100.5657],
+[13.6779,100.5811],
+[13.6799,100.5740],
+[13.7036,100.5765]
+];
+
+fireflyPoints.forEach(function(point){
+L.circleMarker(point,{
+radius:6,
+color:"#ffd93b",
+fillColor:"#ffd93b",
+fillOpacity:0.9
+}).addTo(miniMap);
+});
+
+
+// คลิก map ไปหน้า map เต็ม
+
+miniMap.on('click',function(){
+window.location="/map";
+});
+
+});
+
+</script>
+
+{% endblock %}
