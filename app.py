@@ -133,13 +133,18 @@ def upload():
             
             # --- เลือกใช้ Model ตามที่ผู้ใช้เลือก ---
             if model_type == "pan":
-                firefly_count = count_fireflies_pan(input_path)
+                firefly_count, output_path = count_fireflies_pan(input_path)
             else:
-                firefly_count = count_fireflies_still(input_path)
+                firefly_count, output_path = count_fireflies_still(input_path)
 
-            # ใช้ไฟล์เดิมเป็น output
-            filename = os.path.basename(input_path)
-            output_path = os.path.join(app.config["PROCESSED_FOLDER"], filename)
+            filename = os.path.basename(output_path)
+
+            return render_template(
+                "result.html",
+                video=filename,
+                count=firefly_count,
+                model_used=model_type
+            )
 
             # copy video ไป processed
             import shutil
