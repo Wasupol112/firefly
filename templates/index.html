@@ -10,13 +10,25 @@ margin:auto;
 padding:50px 30px;
 }
 
-/* grid card */
+/* slider wrapper */
 
-.card-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:35px;
+.feature-slider-wrapper{
+position:relative;
 margin-bottom:70px;
+}
+
+/* slider */
+
+.feature-slider{
+display:flex;
+gap:35px;
+overflow-x:auto;
+scroll-behavior:smooth;
+padding:10px;
+}
+
+.feature-slider::-webkit-scrollbar{
+display:none;
 }
 
 /* card */
@@ -32,11 +44,25 @@ display:flex;
 flex-direction:column;
 justify-content:center;
 cursor:pointer;
+min-width:300px;
+flex:0 0 auto;
 }
 
 .feature-card:hover{
 transform:translateY(-6px);
 box-shadow:0 18px 40px rgba(0,0,0,0.12);
+}
+
+/* disabled */
+
+.feature-card.disabled{
+opacity:0.55;
+cursor:not-allowed;
+}
+
+.feature-card.disabled:hover{
+transform:none;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
 /* title */
@@ -56,16 +82,29 @@ line-height:1.6;
 color:#444;
 }
 
-/* disabled upload */
+/* arrows */
 
-.feature-card.disabled{
-opacity:0.55;
-cursor:not-allowed;
+.slider-btn{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+background:white;
+border:none;
+width:50px;
+height:50px;
+border-radius:50%;
+box-shadow:0 6px 16px rgba(0,0,0,0.2);
+font-size:26px;
+cursor:pointer;
+z-index:10;
 }
 
-.feature-card.disabled:hover{
-transform:none;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
+.slider-btn.left{
+left:-10px;
+}
+
+.slider-btn.right{
+right:-10px;
 }
 
 /* mini map */
@@ -104,12 +143,15 @@ color:#555;
 
 </style>
 
-
 <div class="home-container">
 
-<!-- Feature cards -->
+<!-- Feature Slider -->
 
-<div class="card-grid">
+<div class="feature-slider-wrapper">
+
+<button class="slider-btn left" onclick="scrollCards(-1)">❮</button>
+
+<div class="feature-slider" id="featureSlider">
 
 <div class="feature-card" onclick="window.location='/learning'">
 <div class="feature-title">Learning</div>
@@ -118,7 +160,6 @@ Learn about fireflies and their ecosystem
 </div>
 </div>
 
-
 <div class="feature-card" onclick="window.location='/map'">
 <div class="feature-title">Firefly Map</div>
 <div class="feature-text">
@@ -126,14 +167,12 @@ Explore locations where fireflies can be found
 </div>
 </div>
 
-
 <div class="feature-card" onclick="window.location='/schedule'">
 <div class="feature-title">Schedule</div>
 <div class="feature-text">
 Discover the best season and time to see fireflies
 </div>
 </div>
-
 
 <div class="feature-card disabled" onclick="goLogin()">
 <div class="feature-title">Upload Video</div>
@@ -144,12 +183,15 @@ Login required to upload video
 
 </div>
 
+<button class="slider-btn right" onclick="scrollCards(1)">❯</button>
+
+</div>
 
 <!-- Mini Map -->
 
 <div class="map-card">
 
-<h2 style="color:#0077cc;">Firefly Map</h2>
+<h2>Firefly Map</h2>
 
 <div id="miniMap"></div>
 
@@ -161,7 +203,6 @@ Click to explore firefly locations
 
 </div>
 
-
 <script>
 
 function goLogin(){
@@ -171,8 +212,9 @@ window.location="/login";
 
 </script>
 
-
 <script>
+
+/* mini map */
 
 document.addEventListener("DOMContentLoaded", function(){
 
@@ -185,8 +227,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 attribution:'© OpenStreetMap'
 }).addTo(miniMap);
 
-
-// จุดตัวอย่างหิ่งห้อย
 
 var fireflyPoints = [
 [13.6680,100.5585],
@@ -206,12 +246,49 @@ fillOpacity:0.9
 }).addTo(miniMap);
 });
 
-
-// คลิก map ไปหน้า map เต็ม
-
 miniMap.on('click',function(){
 window.location="/map";
 });
+
+});
+
+
+/* FEATURE SLIDER */
+
+const slider = document.getElementById("featureSlider");
+const cards = slider.children;
+const cardWidth = 335;
+
+const firstClone = cards[0].cloneNode(true);
+const lastClone = cards[cards.length-1].cloneNode(true);
+
+slider.appendChild(firstClone);
+slider.insertBefore(lastClone, cards[0]);
+
+slider.scrollLeft = cardWidth;
+
+
+function scrollCards(direction){
+
+slider.scrollBy({
+left: direction * cardWidth,
+behavior:"smooth"
+});
+
+}
+
+
+slider.addEventListener("scroll",()=>{
+
+const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+if(slider.scrollLeft <= 5){
+slider.scrollLeft = maxScroll - cardWidth - 5;
+}
+
+if(slider.scrollLeft >= maxScroll - 5){
+slider.scrollLeft = cardWidth + 5;
+}
 
 });
 
