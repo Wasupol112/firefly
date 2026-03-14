@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+
+.dashboard-container{
+max-width:1300px;
+margin:auto;
+padding:50px 30px;
+}
+
+/* Mini map */
+.map-card{
+background:#ffffff;   /* เปลี่ยนเป็นสีขาว */
+padding:40px;
+border-radius:28px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+margin-bottom:50px;
+text-align:center;
+transition:0.25s;
+}
+
+.map-card:hover{
+transform:translateY(-4px);
+box-shadow:0 16px 40px rgba(0,0,0,0.12);
+}
+
+/* title */
+
+.map-card h3{
+color:#0077cc;
+font-size:30px;
+margin-bottom:25px;
+font-weight:600;
+}
+
+/* map */
+
+#miniMap{
+height:380px;
+border-radius:16px;
+overflow:hidden;
+}
+
+/* bottom text */
+
+.map-text{
+margin-top:18px;
+font-size:18px;
+color:#555;
+}
+
+/* feature cards */
+
+.card-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:35px;
+margin-bottom:70px;
+}
+
+.feature-card{
+background:white;
+padding:50px 45px;
+border-radius:20px;
+min-height:170px;
+box-shadow:0 12px 32px rgba(0,0,0,0.08);
+transition:0.25s;
+display:flex;
+flex-direction:column;
+justify-content:center;
+cursor:pointer;
+}
+
+.feature-card:hover{
+transform:translateY(-6px);
+box-shadow:0 18px 40px rgba(0,0,0,0.12);
+}
+
+.feature-title{
+font-size:30px;
+font-weight:600;
+color:#0077cc;
+margin-bottom:14px;
+letter-spacing:0.3px;
+}
+
+.feature-text{
+font-size:19px;
+line-height:1.7;
+color:#444;
+max-width:260px;
+}
+
+/* fact box */
+
+.fact-box{
+background:white;
+padding:30px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.fact-title{
+color:#0077cc;
+font-size:22px;
+margin-bottom:10px;
+font-weight:600;
+}
+
+.fact-text{
+color:#444;
+font-size:18px;
+line-height:1.6;
+}
+
+/* glow marker */
+
+.glow-marker{
+width:12px;
+height:12px;
+background:#ffd93b;
+border-radius:50%;
+box-shadow:
+0 0 8px #ffd93b,
+0 0 16px #ffd93b,
+0 0 24px #ffd93b;
+}
+
+/* firefly animation */
+
+.firefly{
+position:fixed;
+width:6px;
+height:6px;
+background:#ffd93b;
+border-radius:50%;
+box-shadow:0 0 8px #ffd93b;
+animation:float 10s linear infinite;
+opacity:0.8;
+}
+
+@keyframes float{
+0%{transform:translateY(0px)}
+50%{transform:translateY(-40px)}
+100%{transform:translateY(0px)}
+}
+
+</style>
+
+
+<div class="dashboard-container">
+
+
+<!-- Feature cards -->
+
+<div class="card-grid">
+
+<div class="feature-card" onclick="window.location='/learning'">
+<div class="feature-title">Learning</div>
+<div class="feature-text">
+Learn about fireflies and their ecosystem
+</div>
+</div>
+
+<div class="feature-card" onclick="window.location='/map'">
+<div class="feature-title">Firefly Map</div>
+<div class="feature-text">
+Explore locations where fireflies can be found
+</div>
+</div>
+
+<div class="feature-card" onclick="window.location='/schedule'">
+<div class="feature-title">Schedule</div>
+<div class="feature-text">
+Discover the best season and time to see fireflies
+</div>
+</div>
+
+<div class="feature-card" onclick="window.location='/upload'">
+<div class="feature-title">Upload Video</div>
+<div class="feature-text">
+Upload your night video for firefly detection
+</div>
+</div>
+
+</div>
+
+<!-- Mini Map -->
+
+<div class="map-card" onclick="window.location='/map'">
+
+<h3>Firefly Map</h3>
+
+<div id="miniMap"></div>
+
+<div class="map-text">
+Click to explore firefly locations
+</div>
+
+</div>
+
+
+
+
+
+<!-- Firefly fact -->
+
+<div class="fact-box">
+
+<div class="fact-title">Did you know?</div>
+
+<div class="fact-text">
+Peak firefly season is typically between <b>June – July</b>, 
+and the best time to see them is between <b>19:00 – 21:00</b>.
+</div>
+
+</div>
+
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+
+<script>
+
+var map = L.map('miniMap',{
+zoomControl:false,
+attributionControl:false
+}).setView([13.669,100.576],13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+
+/* heatmap data */
+
+var fireflyPoints = [
+
+/* High density (green areas) */
+
+[13.6680509,100.5585331,1.0],
+[13.6655839,100.5658753,1.0],
+
+/* Medium-high */
+
+[13.6973370,100.5657175,0.8],
+
+/* Medium */
+
+[13.6779142,100.5811187,0.6],
+[13.6799300,100.5740558,0.6],
+
+/* Low */
+
+[13.7036562,100.5765107,0.3]
+
+];
+
+
+/* heatmap */
+
+var heat = L.heatLayer(fireflyPoints,{
+
+radius:45,
+blur:30,
+maxZoom:15,
+
+gradient:{
+0.2:"blue",
+0.4:"lime",
+0.6:"yellow",
+0.8:"orange",
+1:"red"
+}
+
+}).addTo(map);
+
+
+/* glow markers */
+
+function glowMarker(lat,lng){
+
+var icon = L.divIcon({
+className:'',
+html:'<div class="glow-marker"></div>',
+iconSize:[12,12]
+});
+
+L.marker([lat,lng],{icon:icon}).addTo(map);
+
+}
+
+glowMarker(13.6680509,100.5585331);
+glowMarker(13.6655839,100.5658753);
+
+
+/* firefly animation */
+
+for(let i=0;i<20;i++){
+
+let f = document.createElement("div");
+
+f.className="firefly";
+
+f.style.left=Math.random()*100+"vw";
+f.style.top=Math.random()*100+"vh";
+f.style.animationDuration=(6+Math.random()*6)+"s";
+
+document.body.appendChild(f);
+
+}
+
+</script>
+
+
+{% endblock %}
