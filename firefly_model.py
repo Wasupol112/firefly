@@ -104,7 +104,7 @@ def count_fireflies_still(video_path: str) -> int:
     cap.release()
     
     # ส่งคืนตัวเลขจำนวนหิ่งห้อยทั้งหมด (Total Unique)
-    return firefly_id
+    return firefly_id, video_path
 
 # =========================================================
 # โค้ดส่วนวิเคราะห์แบบ Pan (เพิ่มเข้ามาใหม่)
@@ -248,4 +248,4 @@ def count_fireflies_pan(video_path: str) -> int:
         prev_gray = curr_gray.copy()
 
     cap.release()
-    return firefly_id , output_path
+    return firefly_id, video_path
