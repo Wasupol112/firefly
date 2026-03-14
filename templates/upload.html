@@ -196,6 +196,13 @@ margin-top:15px;
 font-size:16px;
 color:#0077cc;
 }
+
+.upload-warning{
+color:#e53935;
+font-size:20px;
+margin-top:8px;
+font-weight:500;
+}
 </style>
 
 <div class="hero">
@@ -223,6 +230,9 @@ color:#0077cc;
     <input id="videoInput" type="file" name="video" accept="video/*" hidden>
 
 </div>
+<div class="upload-warning">
+            รองรับวิดิโอความยาวไม่เกิน 5 วินาที
+        </div>
 
 <div id="fileName" class="file-name"></div>
 
@@ -235,6 +245,7 @@ color:#0077cc;
         </div>
 
         <button class="btn" type="submit">Upload Video</button>
+        
 
     </form>
 
