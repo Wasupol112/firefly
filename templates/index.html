@@ -17,18 +17,13 @@ position:relative;
 margin-bottom:70px;
 }
 
-/* slider */
+/* slider (❌ ไม่มีเลื่อนแล้ว) */
 
 .feature-slider{
 display:flex;
-gap:35px;
-overflow-x:auto;
-scroll-behavior:smooth;
-padding:10px;
-}
-
-.feature-slider::-webkit-scrollbar{
-display:none;
+gap:20px;
+justify-content:space-between;
+overflow-x:visible;
 }
 
 /* card */
@@ -44,8 +39,10 @@ display:flex;
 flex-direction:column;
 justify-content:center;
 cursor:pointer;
-min-width:300px;
-flex:0 0 auto;
+
+/* ⭐ แบ่งเท่ากัน */
+flex:1;
+min-width:0;
 }
 
 .feature-card:hover{
@@ -82,31 +79,6 @@ line-height:1.6;
 color:#444;
 }
 
-/* arrows */
-
-.slider-btn{
-position:absolute;
-top:50%;
-transform:translateY(-50%);
-background:white;
-border:none;
-width:50px;
-height:50px;
-border-radius:50%;
-box-shadow:0 6px 16px rgba(0,0,0,0.2);
-font-size:26px;
-cursor:pointer;
-z-index:10;
-}
-
-.slider-btn.left{
-left:-10px;
-}
-
-.slider-btn.right{
-right:-10px;
-}
-
 /* mini map */
 
 .map-card{
@@ -141,6 +113,24 @@ font-size:18px;
 color:#555;
 }
 
+/* 📱 mobile ให้ swipe ได้ */
+
+@media (max-width:768px){
+
+.feature-slider{
+overflow-x:auto;
+scroll-snap-type:x mandatory;
+padding:0 10px;
+}
+
+.feature-card{
+flex:0 0 85%;
+min-width:85%;
+scroll-snap-align:center;
+}
+
+}
+
 </style>
 
 <div class="home-container">
@@ -149,9 +139,7 @@ color:#555;
 
 <div class="feature-slider-wrapper">
 
-<button class="slider-btn left" onclick="scrollCards(-1)">❮</button>
-
-<div class="feature-slider" id="featureSlider">
+<div class="feature-slider">
 
 <div class="feature-card" onclick="window.location='/learning'">
 <div class="feature-title">Learning</div>
@@ -183,8 +171,6 @@ Login required to upload video
 
 </div>
 
-<button class="slider-btn right" onclick="scrollCards(1)">❯</button>
-
 </div>
 
 <!-- Mini Map -->
@@ -210,10 +196,6 @@ alert("Please login before uploading video");
 window.location="/login";
 }
 
-</script>
-
-<script>
-
 /* mini map */
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -226,7 +208,6 @@ attributionControl:false
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 attribution:'© OpenStreetMap'
 }).addTo(miniMap);
-
 
 var fireflyPoints = [
 [13.6680,100.5585],
@@ -249,46 +230,6 @@ fillOpacity:0.9
 miniMap.on('click',function(){
 window.location="/map";
 });
-
-});
-
-
-/* FEATURE SLIDER */
-
-const slider = document.getElementById("featureSlider");
-const cards = slider.children;
-const cardWidth = 335;
-
-const firstClone = cards[0].cloneNode(true);
-const lastClone = cards[cards.length-1].cloneNode(true);
-
-slider.appendChild(firstClone);
-slider.insertBefore(lastClone, cards[0]);
-
-slider.scrollLeft = cardWidth;
-
-
-function scrollCards(direction){
-
-slider.scrollBy({
-left: direction * cardWidth,
-behavior:"smooth"
-});
-
-}
-
-
-slider.addEventListener("scroll",()=>{
-
-const maxScroll = slider.scrollWidth - slider.clientWidth;
-
-if(slider.scrollLeft <= 5){
-slider.scrollLeft = maxScroll - cardWidth - 5;
-}
-
-if(slider.scrollLeft >= maxScroll - 5){
-slider.scrollLeft = cardWidth + 5;
-}
 
 });
 
