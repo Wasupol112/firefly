@@ -99,6 +99,16 @@ init_db()
 def home():
     return render_template("index.html")
 
+@app.route("/show_users")
+def show_users():
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users")
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    return str(data)
+
 # หน้า register
 @app.route("/signup", methods=["GET","POST"])
 def signup():
