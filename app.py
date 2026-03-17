@@ -2,13 +2,85 @@ from flask import Flask, render_template, request, redirect
 from flask import send_from_directory
 from flask import session
 from firefly_model import count_fireflies_still, count_fireflies_pan 
-import sqlite3
 import os
 import re
 import shutil
+import psycopg2
+
+# ================= DATABASE =================
+
+def connect_db():
+    return psycopg2.connect(os.environ["DATABASE_URL"])
+
+def init_db():
+    conn = connect_db()
+    cur = conn.cursor()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE,
+        password TEXT,
+        fullname TEXT,
+        email TEXT UNIQUE
+    )
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def register_user(username, password, fullname, email):
+    conn = connect_db()
+    cur = conn.cursor()
+
+    # เช็ค username ซ้ำ
+    cur.execute("SELECT * FROM users WHERE username=%s", (username,))
+    if cur.fetchone():
+        cur.close()
+        conn.close()
+        return "username"
+
+    # เช็ค email ซ้ำ
+    cur.execute("SELECT * FROM users WHERE email=%s", (email,))
+    if cur.fetchone():
+        cur.close()
+        conn.close()
+        return "email"
+
+    # insert
+    cur.execute(
+        "INSERT INTO users (username, password, fullname, email) VALUES (%s, %s, %s, %s)",
+        (username, password, fullname, email)
+    )
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return "success"
+
+def login_user(username, password):
+    conn = connect_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT * FROM users WHERE username=%s AND password=%s",
+        (username, password)
+    )
+
+    user = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return user is not None
+
+# ============================================
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".",1)[1].lower() in ALLOWED_EXTENSIONS
+
 app = Flask(__name__)
 ALLOWED_EXTENSIONS = {"mp4","avi","mov","mkv"}
 UPLOAD_FOLDER = "uploads"
@@ -19,23 +91,9 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 app.secret_key = "firefly_secret"
 
-
-def connect_db():
-    return sqlite3.connect("database.db")
-def init_db():
-    db = connect_db()
-    db.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        password TEXT,
-        fullname TEXT,
-        email TEXT UNIQUE
-    )
-    """)
-    db.commit()
-
+# 🔥 สร้าง table อัตโนมัติ
 init_db()
+
 # หน้า home
 @app.route("/")
 def home():
@@ -52,8 +110,6 @@ def signup():
         fullname = request.form["fullname"]
         email = request.form["email"]
 
-        db = connect_db()
-
         # password length
         if len(password) < 8:
             return render_template("signup.html", error="Password must be at least 8 characters")
@@ -63,31 +119,13 @@ def signup():
         if not re.match(email_pattern, email):
             return render_template("signup.html", error="Invalid email format")
 
-        # username already exists
-        user = db.execute(
-            "SELECT * FROM users WHERE username=?",
-            (username,)
-        ).fetchone()
+        result = register_user(username, password, fullname, email)
 
-        if user:
+        if result == "username":
             return render_template("signup.html", error="Username already exists")
 
-        # email already exists
-        email_check = db.execute(
-            "SELECT * FROM users WHERE email=?",
-            (email,)
-        ).fetchone()
-
-        if email_check:
+        if result == "email":
             return render_template("signup.html", error="Email already registered")
-
-        # insert user
-        db.execute(
-            "INSERT INTO users(username,password,fullname,email) VALUES(?,?,?,?)",
-            (username,password,fullname,email)
-        )
-
-        db.commit()
 
         return redirect("/login")
 
@@ -99,16 +137,13 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        db = connect_db()
-        user = db.execute(
-            "SELECT * FROM users WHERE username=? AND password=?",
-            (username,password)
-        ).fetchone()
-        if user:
+
+        if login_user(username, password):
             session["user"] = username
             return redirect("/dashboard")
         else:
             return render_template("login.html", error="Wrong username or password")
+
     return render_template("login.html")
 
 # หน้า dashboard
@@ -125,30 +160,22 @@ def upload():
         
     if request.method == "POST":
         video = request.files["video"]
-        # รับค่าประเภทวิดีโอจากฟอร์มในหน้า HTML
         model_type = request.form.get("model_type") 
 
         if video and allowed_file(video.filename):
             input_path = os.path.join(app.config["UPLOAD_FOLDER"], video.filename)
             video.save(input_path)
             
-            # --- เลือกใช้ Model ตามที่ผู้ใช้เลือก ---
-            # --- เลือกใช้ Model ตามที่ผู้ใช้เลือก ---
             if model_type == "pan":
-
                 result = count_fireflies_pan(input_path)
-
                 if isinstance(result, tuple):
                     firefly_count = result[0]
                     output_path = result[1]
                 else:
                     firefly_count = result
                     output_path = input_path
-
             else:
-
                 result = count_fireflies_still(input_path)
-
                 if isinstance(result, tuple):
                     firefly_count = result[0]
                     output_path = result[1]
@@ -157,9 +184,7 @@ def upload():
                     output_path = input_path
 
             filename = os.path.basename(output_path)
-
             processed_path = os.path.join(app.config["PROCESSED_FOLDER"], filename)
-
             shutil.copy(output_path, processed_path)
 
             return render_template(
@@ -179,7 +204,6 @@ def logout():
     session.pop("user", None)
     return redirect("/")
 
-# หน้า processed
 @app.route('/processed/<filename>')
 def processed_video(filename):
     return send_from_directory("processed", filename)
@@ -199,9 +223,6 @@ def map():
 @app.route("/schedule")
 def schedule():
     return render_template("schedule.html")
-
-""" #จำกัดขนาด VDO
-app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024 """
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
