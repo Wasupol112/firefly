@@ -125,9 +125,15 @@ transform:translateY(0);
 margin-top:35px;
 background:#f7f9fb;
 padding:25px;
+font-size: 15px;
 border-radius:14px;
 text-align:left;
 border:1px solid #e3e8ef;
+}
+
+.upload-guide li b{
+display: block;
+margin-bottom: 3px;
 }
 
 .upload-guide h3{
@@ -202,6 +208,63 @@ color:#e53935;
 font-size:20px;
 margin-top:8px;
 font-weight:500;
+}
+
+@media (max-width: 768px){
+
+    .hero{
+        max-width: 100%;
+        padding: 20px;
+        margin: 10px;
+        border-radius: 15px;
+    }
+
+    .hero h1{
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .hero p{
+        font-size: 15px;
+        text-align: center;
+    }
+
+    /* upload guide ขยายเต็ม */
+    .upload-guide{
+        padding: 18px;
+    }
+
+    /* bullet point อ่านง่ายขึ้น */
+    .upload-guide ul{
+        margin-left: 18px;
+        padding-left: 10px;
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .upload-guide li{
+        margin-bottom: 10px;
+        word-break: break-word; /* กันข้อความล้น */
+    }
+
+    /* ปุ่ม */
+    .btn{
+        width: 100%;
+        font-size: 16px;
+    }
+
+    /* upload area */
+    .upload-area{
+        padding: 30px 15px;
+    }
+
+    .upload-text{
+        font-size: 16px;
+    }
+
+    .upload-sub{
+        font-size: 13px;
+    }
 }
 </style>
 
