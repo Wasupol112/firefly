@@ -4,3 +4,4 @@ numpy
 opencv-python
 scipy
 openpyxl
+psycopg2-binary
