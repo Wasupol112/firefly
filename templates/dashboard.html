@@ -64,10 +64,13 @@ margin-bottom:70px;
 
 .feature-slider{
 display:flex;
-gap:35px;
-overflow-x:auto;
-scroll-behavior:smooth;
-padding:10px;
+gap:20px;
+
+/* ❌ ปิดการเลื่อน */
+overflow-x:visible;
+
+/* ⭐ จัดให้อยู่บรรทัดเดียว */
+justify-content:space-between;
 }
 
 .feature-slider::-webkit-scrollbar{
@@ -77,38 +80,13 @@ display:none;
 /* card size */
 
 .feature-card{
-min-width:300px;
-flex:0 0 auto;
+flex:1;              /* ⭐ แบ่งเท่ากัน */
+min-width:0;         /* ⭐ กันล้น */
+max-width:100%;
+
 }
 
 /* arrow buttons */
-
-.slider-btn{
-position:absolute;
-top:50%;
-transform:translateY(-50%);
-background:white;
-border:none;
-width:50px;
-height:50px;
-border-radius:50%;
-box-shadow:0 6px 16px rgba(0,0,0,0.2);
-font-size:26px;
-cursor:pointer;
-z-index:10;
-}
-
-.slider-btn.left{
-left:-10px;
-}
-
-.slider-btn.right{
-right:-10px;
-}
-
-.slider-btn:hover{
-transform:translateY(-50%) scale(1.1);
-}
 
 .feature-card{
 background:white;
@@ -197,6 +175,52 @@ opacity:0.8;
 100%{transform:translateY(0px)}
 }
 
+@media (max-width: 768px){
+
+.dashboard-container{
+padding:20px 0;
+}
+
+@media (max-width: 768px){
+
+.feature-slider{
+display:flex;
+gap:15px;
+overflow-x:auto;
+scroll-behavior:smooth;
+scroll-snap-type: x mandatory;
+padding:0 7.5%;
+}
+
+.feature-card{
+flex:0 0 85%;
+min-width:85%;
+max-width:85%;
+
+scroll-snap-align:center;
+
+border-radius:28px;
+padding:40px 25px;
+margin:0 auto;
+}
+
+}
+
+.feature-title{
+font-size:26px;
+}
+
+.feature-text{
+font-size:16px;
+max-width:100%;
+}
+
+#miniMap{
+height:55vh;
+}
+
+}
+
 </style>
 
 
@@ -206,8 +230,6 @@ opacity:0.8;
 <!-- Feature Slider -->
 
 <div class="feature-slider-wrapper">
-
-<button class="slider-btn left" onclick="scrollCards(-1)">❮</button>
 
 <div class="feature-slider" id="featureSlider">
 
@@ -241,7 +263,6 @@ Upload your night video for firefly detection
 
 </div>
 
-<button class="slider-btn right" onclick="scrollCards(1)">❯</button>
 
 </div>
 
@@ -352,60 +373,6 @@ f.style.animationDuration=(6+Math.random()*6)+"s";
 document.body.appendChild(f);
 
 }
-
-
-/* =========================
-   FEATURE SLIDER
-   ========================= */
-
-const slider = document.getElementById("featureSlider");
-const cards = slider.children;
-const cardWidth = 335;
-
-/* clone first and last for loop */
-
-const firstClone = cards[0].cloneNode(true);
-const lastClone = cards[cards.length-1].cloneNode(true);
-
-slider.appendChild(firstClone);
-slider.insertBefore(lastClone, cards[0]);
-
-/* start position */
-
-slider.scrollLeft = cardWidth;
-
-
-/* arrow scroll */
-
-function scrollCards(direction){
-
-slider.scrollBy({
-left: direction * cardWidth,
-behavior:"smooth"
-});
-
-}
-
-
-/* infinite loop logic */
-
-slider.addEventListener("scroll", ()=>{
-
-const maxScroll = slider.scrollWidth - slider.clientWidth;
-
-/* loop left */
-
-if(slider.scrollLeft <= 5){
-slider.scrollLeft = maxScroll - cardWidth - 5;
-}
-
-/* loop right */
-
-if(slider.scrollLeft >= maxScroll - 5){
-slider.scrollLeft = cardWidth + 5;
-}
-
-});
 
 </script>
 
